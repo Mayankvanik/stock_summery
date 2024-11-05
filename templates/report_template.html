@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis Report</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="min-h-screen bg-black p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-800">Stock Analysis Report</h1>
+            <h2 class="text-xl text-gray-600">{{ stock_symbol }}</h2>
+            <p class="text-gray-500">{{ current_date }}</p>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="p-4 border rounded-lg shadow-sm">
+                <h3 class="font-bold text-gray-700">Current Price</h3>
+                <p class="text-2xl text-blue-600">₹{{ metrics['Current_Price'] }}</p>
+            </div>
+            <div class="p-4 border rounded-lg shadow-sm">
+                <h3 class="font-bold text-gray-700">52W Range</h3>
+                <p class="text-white text-sm">₹{{ metrics['52W_Low'] }} - ₹{{ metrics['52W_High'] }}</p>
+            </div>
+            <div class="p-4 border rounded-lg shadow-sm">
+                <h3 class="font-bold text-gray-700">Market Cap</h3>
+                <p class="text-white text-lg">₹{{ fundamentals['Market_Cap'] }}</p>
+            </div>
+        </div>
+
+        <!-- Technical Analysis -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold text-white mb-4">Technical Analysis</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Moving Averages</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>50 Day MA: ₹{{ metrics['50_Day_MA'] }}</li>
+                        <li>200 Day MA: ₹{{ metrics['200_Day_MA'] }}</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Volume Analysis</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>Current: {{ metrics['Volume'] | round(2) }}M</li>
+                        <li>3M Avg: {{ metrics['Avg_Volume_3M'] | round(2) }}M</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fundamental Data -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold text-white mb-4">Fundamental Analysis</h2>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Valuation</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>P/E Ratio: {{ fundamentals['PE_Ratio'] }}</li>
+                        <li>Forward P/E: {{ fundamentals['Forward_PE'] }}</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Financial Health</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>Debt/Equity: {{ fundamentals['Debt_to_Equity'] }}</li>
+                        <li>Current Ratio: {{ fundamentals['Current_Ratio'] }}</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Performance</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>ROE: {{ fundamentals['ROE'] | round(2) }}%</li>
+                        <li>Profit Margin: {{ fundamentals['Profit_Margin'] | round(2) }}%</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ML Prediction -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold text-white mb-4">Price Prediction</h2>
+            <div class="p-4 bg-blue-50 rounded-lg">
+                <div class="flex justify-between items-center">
+                    <span class="font-semibold">ML Predicted Price:</span>
+                    <span class="text-xl text-blue-600">₹{{ prediction['Predicted_Price'] }}</span>
+                </div>
+            </div>
+        </section>
+        
+
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold text-white mb-4">LLM Analysis</h2>
+            <div class="space-y-4">
+        
+                <!-- Strengths Section -->
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <h3 class="text-lg font-semibold text-green-700">Strengths</h3>
+                    <p class="mt-2 text-sm text-gray-800">
+                       {{recommendation['strengths']}}
+                    </p>
+                </div>
+        
+                <!-- Weaknesses Section -->
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <h3 class="text-lg font-semibold text-red-700">Weaknesses</h3>
+                    <p class="mt-2 text-sm text-gray-800">
+                        {{recommendation['weaknesses']}}
+                    </p>
+                </div>
+        
+                <!-- Risks Section -->
+                <div class="p-4 bg-yellow-50 rounded-lg">
+                    <h3 class="text-lg font-semibold text-yellow-700">Risks</h3>
+                    <p class="mt-2 text-sm text-gray-800">
+                        {{recommendation['risk']}},{{recommendation['risks']}}
+                    </p>
+                </div>
+        
+                <!-- Opportunities Section -->
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <h3 class="text-lg font-semibold text-blue-700">Opportunities</h3>
+                    <p class="mt-2 text-sm text-gray-800">
+                        {{recommendation['opportunities']}}
+                    </p>
+                </div>
+        
+                <!-- Investment Recommendation Long-term Section -->
+                <div class="p-4 bg-purple-50 rounded-lg">
+                    <h3 class="text-lg font-semibold text-purple-700">Investment Recommendation (Long-term)</h3>
+                    <p class="mt-2 text-sm text-gray-800">
+                        {{recommendation['investment_recommendation_long-term']}}
+                    </p>
+                </div>
+        
+                <!-- Investment Recommendation Short-term Section -->
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <h3 class="text-lg font-semibold text-green-700">Investment Recommendation (Short-term)</h3>
+                    <p class="mt-2 text-sm text-gray-800">
+                        {{recommendation['investment_recommendation_short-term']}}
+                    </p>
+                </div>
+        
+                <!-- Sentiment Section -->
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-700">Sentiment</h3>
+                    <p class="mt-2 text-sm text-gray-800">
+                        {{recommendation['sentiment']}}
+                    </p>
+                </div>
+        
+            </div>
+        </section>
+        
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Stock Insights</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-white p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Enhanced Header -->
+        <header class="text-center mb-12 animate__animated animate__fadeIn">
+            <div class="inline-block p-2 px-6 bg-blue-600 text-white rounded-full mb-4">
+                STOCK INSIGHTS
+            </div>
+            <h1 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                {{ stock_symbol }}
+            </h1>
+            <p class="text-gray-500 mt-2">Analysis Report • {{ current_date }}</p>
+        </header>
+
+        <!-- Highlight Card -->
+        <div class="relative overflow-hidden bg-white rounded-xl shadow-lg p-6 mb-8 animate__animated animate__fadeInUp">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full -mr-16 -mt-16 opacity-50"></div>
+            <div class="relative z-10 grid grid-cols-3 gap-8">
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Current Price</p>
+                    <p class="text-3xl font-bold text-blue-600 mt-1">₹{{ metrics['Current_Price'] }}</p>
+                </div>
+                <div class="text-center border-l border-r border-gray-200">
+                    <p class="text-gray-600 text-sm">52W Range</p>
+                    <div class="mt-1">
+                        <span class="text-red-500 font-medium">₹{{ metrics['52W_Low'] }}</span>
+                        <span class="text-gray-400 mx-2">|</span>
+                        <span class="text-green-500 font-medium">₹{{ metrics['52W_High'] }}</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Market Cap</p>
+                    <p class="text-2xl font-bold text-gray-800 mt-1">₹{{ fundamentals['Market_Cap'] }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Analysis -->
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <section class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-102 transition-transform duration-200">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                    Technical Analysis
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-700">Moving Averages</h3>
+                        <div class="mt-3 grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">50 Day MA</p>
+                                <p class="text-lg font-medium">₹{{ metrics['50_Day_MA'] }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">200 Day MA</p>
+                                <p class="text-lg font-medium">₹{{ metrics['200_Day_MA'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-700">Volume Analysis</h3>
+                        <div class="mt-3 grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Current</p>
+                                <p class="text-lg font-medium">{{ metrics['Volume'] | round(2) }}M</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">3M Average</p>
+                                <p class="text-lg font-medium">{{ metrics['Avg_Volume_3M'] | round(2) }}M</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-xl shadow-lg p-6 transform hover:scale-102 transition-transform duration-200">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                    Fundamental Analysis
+                </h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-700">Valuation</h3>
+                        <div class="mt-2 space-y-2">
+                            <div>
+                                <p class="text-sm text-gray-500">P/E Ratio</p>
+                                <p class="text-lg font-medium">{{ fundamentals['PE_Ratio'] }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Forward P/E</p>
+                                <p class="text-lg font-medium">{{ fundamentals['Forward_PE'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-700">Health</h3>
+                        <div class="mt-2 space-y-2">
+                            <div>
+                                <p class="text-sm text-gray-500">Debt/Equity</p>
+                                <p class="text-lg font-medium">{{ fundamentals['Debt_to_Equity'] }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Current Ratio</p>
+                                <p class="text-lg font-medium">{{ fundamentals['Current_Ratio'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ML Prediction -->
+        <section class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-lg p-6 mb-8 text-white">
+            <h2 class="text-xl font-bold mb-4">AI Price Prediction</h2>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm opacity-75">Expected Future Price</p>
+                    <p class="text-3xl font-bold mt-1">₹{{ prediction['Predicted_Price'] }}</p>
+                </div>
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Investment Recommendation -->
+        <section class="grid grid-cols-2 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-yellow-800">Short-term Outlook</h3>
+                    <div class="w-10 h-10 bg-yellow-200 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-lg font-semibold text-yellow-900">{{ recommendation['Short_Term'] }}</p>
+                <p class="mt-2 text-yellow-800">{{ recommendation['Short_Term_Advice'] }}</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-purple-800">Long-term Vision</h3>
+                    <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-lg font-semibold text-purple-900">{{ recommendation['Long_Term'] }}</p>
+                <p class="mt-2 text-purple-800">{{ recommendation['Long_Term_Advice'] }}</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

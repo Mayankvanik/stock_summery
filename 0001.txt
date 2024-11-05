@@ -1,0 +1,38 @@
+{'address1': 'Corporate Center B', 'address2': '34 Sant Tukaram Road Carnac Bunder', 'city': 'Mumbai', 'zip': '400 009', 
+'country': 'India', 'phone': '91 22 6665 8282', 'website': 'https://www.tatapower.com', 
+'industry': 'Utilities - Independent Power Producers', 'industryKey': 'utilities-independent-power-producers', 
+'industryDisp': 'Utilities - Independent Power Producers', 'sector': 'Utilities', 'sectorKey': 'utilities', 
+'sectorDisp': 'Utilities', 'longBusinessSummary': 'The Tata Power Company Limited engages in the generation, transmission,
+ distribution, and trading of electricity in India and internationally. The company generates power from hydroelectric and 
+ thermal sources, such as coal, gas, and oil; and provides related ancillary services. It also engages in the operation of
+  transmission and distribution networks; and sale of power to retail customers through distribution network and related 
+  ancillary services. In addition, the company offers project management contracts/infrastructure management, and property 
+  development services, as well as rents oil tanks. Further, it manufactures and sells solar cells and modules, 
+  and pumps; operates electric vehicle charging stations and coal mines; generates electricity through solar, wind, 
+  and waste heat sources; trades in power; and provides engineering, procurement, and construction, as well as logistics services.
+   Additionally, the company offers microgrid, rooftop solar, and home automation solutions. As of March 31, 2024,
+    it had an installed capacity of 14,707 megawatt. The company was founded in 1915 and is based in Mumbai, India.', 
+    'fullTimeEmployees': 22372, 
+        
+       'auditRisk': 2, 'boardRisk': 9, 'compensationRisk': 8, 'shareHolderRightsRisk': 5, 'overallRisk': 9, 'governanceEpochDate': 1730419200, 'compensationAsOfEpochDate': 1735603200, 
+       'maxAge': 86400, 'priceHint': 2, 'previousClose': 445.45, 'open': 446.25, 'dayLow': 426.05, 'dayHigh': 446.8,
+        'regularMarketPreviousClose': 445.45, 'regularMarketOpen': 446.25, 'regularMarketDayLow': 426.05, 
+        'regularMarketDayHigh': 446.8, 'dividendRate': 2.0, 'dividendYield': 0.0045, 'exDividendDate': 1720051200,
+         'payoutRatio': 0.1708, 'fiveYearAvgDividendYield': 1.31, 'beta': 0.798, 'trailingPE': 36.588387, 'volume': 6580547, 
+         'regularMarketVolume': 6580547, 'averageVolume': 14311969, 'averageVolume10days': 12018241, 'averageDailyVolume10Day': 12018241, 
+         'bid': 428.4, 'ask': 428.55, 'marketCap': 1385067577344, 'fiftyTwoWeekLow': 245.6, 'fiftyTwoWeekHigh': 494.85, 
+         'priceToSalesTrailing12Months': 2.181591, 'fiftyDayAverage': 446.496, 'twoHundredDayAverage': 426.30225, 'currency': 'INR', 
+         'enterpriseValue': 1972099874816, 'profitMargins': 0.059, 'floatShares': 1670086299, 'sharesOutstanding': 3195340032,
+          'heldPercentInsiders': 0.4722, 'heldPercentInstitutions': 0.20632, 'impliedSharesOutstanding': 3232740096,
+           'bookValue': 107.133, 'priceToBook': 3.9992347, 'lastFiscalYearEnd': 1711843200, 'nextFiscalYearEnd': 1743379200, 
+           'mostRecentQuarter': 1727654400, 'earningsQuarterlyGrowth': 0.058, 'netIncomeToCommon': 37456699392, 'trailingEps': 11.71, 
+           'lastSplitFactor': '10:1', 'lastSplitDate': 1316995200, 'enterpriseToRevenue': 3.106, 'enterpriseToEbitda': 16.575, 
+           '52WeekChange': 0.7633741, 'SandP52WeekChange': 0.31214523, 'lastDividendValue': 2.0, 'lastDividendDate': 1720051200, 
+           'exchange': 'NSI', 'quoteType': 'EQUITY', 'symbol': 'TATAPOWER.NS', 'underlyingSymbol': 'TATAPOWER.NS', 'shortName': 'TATA POWER CO LTD', 
+           'longName': 'The Tata Power Company Limited', 'firstTradeDateEpochUtc': 820467900, 'timeZoneFullName': 'Asia/Kolkata', 'timeZoneShortName': 'IST', 
+           'uuid': '92ec8ada-a956-33ab-a01b-394afebf8430', 'messageBoardId': 'finmb_874401', 'gmtOffSetMilliseconds': 19800000, 
+           'currentPrice': 428.45, 'recommendationKey': 'none', 'totalCash': 96559202304, 'totalCashPerShare': 30.223, 'ebitda': 118982901760, 
+           'totalDebt': 583139393536, 'quickRatio': 0.468, 'currentRatio': 0.663, 'totalRevenue': 634888716288, 'debtToEquity': 144.12, 
+           'revenuePerShare': 198.607, 'returnOnAssets': 0.037019998, 'returnOnEquity': 0.11367, 'freeCashflow': -99782852608, 
+           'operatingCashflow': 131641401344, 'earningsGrowth': 0.058, 'revenueGrowth': -0.003, 'grossMargins': 0.32672, 
+           'ebitdaMargins': 0.18741, 'operatingMargins': 0.17571, 'financialCurrency': 'INR', 'trailingPegRatio': None}

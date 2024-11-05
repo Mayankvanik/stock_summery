@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis Report</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="min-h-screen bg-white p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-800">Stock Analysis Report</h1>
+            <h2 class="text-xl text-gray-600">JPPOWER.NS</h2>
+            <p class="text-gray-500">2024-10-28 12:08:06</p>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="p-4 border rounded-lg shadow-sm">
+                <h3 class="font-bold text-gray-700">Current Price</h3>
+                <p class="text-2xl text-blue-600">₹172.52000427246094</p>
+            </div>
+            <div class="p-4 border rounded-lg shadow-sm">
+                <h3 class="font-bold text-gray-700">52W Range</h3>
+                <p class="text-sm">₹125.69255025194153 - ₹244.39999389648438</p>
+            </div>
+            <div class="p-4 border rounded-lg shadow-sm">
+                <h3 class="font-bold text-gray-700">Market Cap</h3>
+                <p class="text-lg">₹154826866688</p>
+            </div>
+        </div>
+
+        <!-- Technical Analysis -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Technical Analysis</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Moving Averages</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>50 Day MA: ₹201.82880065917968</li>
+                        <li>200 Day MA: ₹169.68305732727052</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Volume Analysis</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>Current: 3679632M</li>
+                        <li>3M Avg: 16882299.83M</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fundamental Data -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Fundamental Analysis</h2>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Valuation</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>P/E Ratio: 39.120182</li>
+                        <li>Forward P/E: 40.30841</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Financial Health</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>Debt/Equity: 0.784</li>
+                        <li>Current Ratio: 1.802</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold">Performance</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li>ROE: 0.41%</li>
+                        <li>Profit Margin: 0.64%</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ML Prediction -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Price Prediction</h2>
+            <div class="p-4 bg-blue-50 rounded-lg">
+                <div class="flex justify-between items-center">
+                    <span class="font-semibold">Predicted Price:</span>
+                    <span class="text-xl text-blue-600">₹175.28080108642578</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Investment Recommendation -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">LLM_Analysis</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-yellow-50 rounded-lg">
+                    <h3 class="font-semibold text-yellow-800">Short-term: </h3>
+                    <p class="mt-2 text-sm"></p>
+                </div>
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <h3 class="font-semibold text-red-800">Long-term: </h3>
+                    <p class="mt-2 text-sm"></p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
