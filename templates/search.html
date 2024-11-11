@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finance Search</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+        #results {
+            margin-top: 20px;
+        }
+        .result-item {
+            cursor: pointer;
+            padding: 5px;
+        }
+        .result-item:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="searchInput" placeholder="Search stock symbol or company name">
+    <div id="results"></div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('results');
+
+        searchInput.addEventListener('input', async () => {
+            const query = searchInput.value;
+            // console.log(query, "QUERY")
+            const response = await fetch(`/search?query=${query}`);
+            const data = await response.json();
+            if (data.error) {
+                resultsContainer.innerHTML = `<div style="color: red;">${data.error}</div>`;
+            } else {
+                // Update the DOM with the search results
+                resultsContainer.innerHTML = '';
+                for (const quote of data.quotes) {
+                    const symbol = quote.symbol;
+                    const name = quote.shortname || quote.longname;
+                    const resultItem = document.createElement('div');
+                    resultItem.classList.add('result-item');
+                    resultItem.textContent = `${symbol} ->> ${name}`;
+                    resultItem.addEventListener('click', () => {
+                        resultsContainer.innerHTML = `<div>Selected symbol: ${symbol}</div>`;
+                        searchInput.value = symbol;
+                    });
+                    resultsContainer.appendChild(resultItem);
+                }
+            }   
+        });
+    </script>
+</body>
+</html>

@@ -5,30 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Analysis Tool</title>
     <style>
+        /* Styles for main container, input, and suggestion dropdown */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f0f2f5;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
-
         .input-section {
             background-color: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            position: relative;
         }
-
         .form-group {
             margin-bottom: 15px;
+            position: relative;
         }
-
         input[type="text"] {
             width: 300px;
             padding: 10px;
@@ -36,7 +35,6 @@
             border-radius: 4px;
             font-size: 16px;
         }
-
         button {
             background-color: #007bff;
             color: white;
@@ -46,65 +44,27 @@
             cursor: pointer;
             font-size: 16px;
         }
-
         button:hover {
             background-color: #0056b3;
         }
-
-        #loading {
-            display: none;
-            margin: 20px 0;
+        #results {
+            display: none; /* Hide initially */
+            position: absolute;
+            top: 60px; /* Position just below the input field */
+            width: 300px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1;
         }
-
-        #result {
-            display: none;
+        .result-item {
+            padding: 10px;
+            cursor: pointer;
         }
-
-        .analysis-section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+        .result-item:hover {
+            background-color: #f1f1f1;
         }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .metric-card {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-        }
-
-        .strength-weakness-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .strengths {
-            background-color: #d4edda;
-            padding: 15px;
-            border-radius: 6px;
-        }
-
-        .weaknesses {
-            background-color: #f8d7da;
-            padding: 15px;
-            border-radius: 6px;
-        }
-
         .error-message {
             color: red;
             display: none;
@@ -114,75 +74,88 @@
 </head>
 <body>
     <div class="container">
-        <!-- Input Section -->
         <div class="input-section">
             <h1>Stock Analysis Tool</h1>
             <form id="stockForm">
                 <div class="form-group">
                     <label for="stockSymbol">Enter Stock Symbol:</label>
-                    <input type="text" id="stockSymbol" name="symbol" required 
-                           placeholder="e.g., AAPL, MSFT, GOOGL">
+                    <input type="text" id="stockSymbol" name="symbol" placeholder="e.g., AAPL, MSFT, GOOGL">
                     <button type="submit">Analyze</button>
+                    <div id="results"></div>
                 </div>
             </form>
             <div id="error-message" class="error-message"></div>
         </div>
 
         <!-- Loading Indicator -->
-        <div id="loading">
-            Analyzing stock data... Please wait...
-        </div>
+        <div id="loading" style="display: none;">Analyzing stock data... Please wait...</div>
 
         <!-- Results Section -->
-        <div id="result">
-            <div class="analysis-section">
-                <div class="section-title">Technical Analysis</div>
-                <div class="metrics-grid" id="technical-metrics">
-                    <!-- Technical metrics will be inserted here -->
-                </div>
-            </div>
-
-            <div class="analysis-section">
-                <div class="section-title">Fundamental Analysis</div>
-                <div class="metrics-grid" id="fundamental-metrics">
-                    <!-- Fundamental metrics will be inserted here -->
-                </div>
-            </div>
-
-            <div class="analysis-section">
-                <div class="section-title">Strengths & Weaknesses</div>
-                <div class="strength-weakness-grid">
-                    <div class="strengths">
-                        <h3>Strengths</h3>
-                        <ul id="strengths-list">
-                            <!-- Strengths will be inserted here -->
-                        </ul>
-                    </div>
-                    <div class="weaknesses">
-                        <h3>Weaknesses</h3>
-                        <ul id="weaknesses-list">
-                            <!-- Weaknesses will be inserted here -->
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="result"></div>
     </div>
 
     <script>
+        const searchInput = document.getElementById('stockSymbol');
+        const resultsContainer = document.getElementById('results');
+
+        // Fetch search suggestions and show them in #results div
+        searchInput.addEventListener('input', async () => {
+            const query = searchInput.value;
+            if (query.length > 0) {
+                try {
+                    const response = await fetch(`/search?query=${query}`);
+                    const data = await response.json();
+
+                    if (data.error) {
+                        resultsContainer.innerHTML = `<div style="color: red;">${data.error}</div>`;
+                        resultsContainer.style.display = 'block';
+                    } else if (data.quotes && data.quotes.length > 0) {
+                        resultsContainer.innerHTML = '';
+                        data.quotes.forEach((quote) => {
+                            const symbol = quote.symbol;
+                            const name = quote.shortname || quote.longname;
+                            const resultItem = document.createElement('div');
+                            resultItem.classList.add('result-item');
+                            resultItem.textContent = `${symbol} ->> ${name}`;
+                            resultItem.addEventListener('click', () => {
+                                searchInput.value = symbol;
+                                resultsContainer.style.display = 'none';
+                            });
+                            resultsContainer.appendChild(resultItem);
+                        });
+                        resultsContainer.style.display = 'block';
+                    } else {
+                        resultsContainer.style.display = 'none';
+                    }
+                } catch (error) {
+                    resultsContainer.innerHTML = `<div style="color: red;">Error fetching suggestions</div>`;
+                    resultsContainer.style.display = 'block';
+                }
+            } else {
+                resultsContainer.style.display = 'none';
+            }
+        });
+
+        // Hide suggestions when clicking outside of the search input or suggestions
+        document.addEventListener('click', (event) => {
+            if (!searchInput.contains(event.target) && !resultsContainer.contains(event.target)) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+
+        // Form submission to analyze stock
         document.getElementById('stockForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const stockSymbol = document.getElementById('stockSymbol').value;
+
+            const stockSymbol = searchInput.value;
             const loadingDiv = document.getElementById('loading');
             const resultDiv = document.getElementById('result');
             const errorDiv = document.getElementById('error-message');
-            
-            // Reset display
+
             loadingDiv.style.display = 'block';
             resultDiv.style.display = 'none';
             errorDiv.style.display = 'none';
-            
+
             try {
                 const response = await fetch('/analyze-stock/', {
                     method: 'POST',
@@ -191,11 +164,11 @@
                     },
                     body: JSON.stringify({ symbol: stockSymbol })
                 });
-                
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch stock analysis');
                 }
-                
+
                 const htmlContent = await response.text();
                 resultDiv.innerHTML = htmlContent;
                 resultDiv.style.display = 'block';
@@ -209,3 +182,177 @@
     </script>
 </body>
 </html>
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis Tool</title>
+    <style>
+        /* Styles for main container, input, and suggestion dropdown */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .input-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #results {
+            position: absolute;
+            top: 60px;
+            width: 300px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1;
+        }
+        .result-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .result-item:hover {
+            background-color: #f1f1f1;
+        }
+        .error-message {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-section">
+            <h1>Stock Analysis Tool</h1>
+            <form id="stockForm">
+                <div class="form-group">
+                    <label for="stockSymbol">Enter Stock Symbol:</label>
+                    <input type="text" id="stockSymbol" name="symbol" placeholder="e.g., AAPL, MSFT, GOOGL">
+                    <button type="submit">Analyze</button>
+                    <div id="results"></div>
+                </div>
+            </form>
+            <div id="error-message" class="error-message"></div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <!-- <div id="loading" style="display: none;">Analyzing stock data... Please wait...</div> -->
+
+        <!-- Results Section -->
+        <!-- <div id="result"></div> -->
+    <!-- </div> -->
+
+    <!-- <script>
+        const searchInput = document.getElementById('stockSymbol');
+        const resultsContainer = document.getElementById('results');
+
+        // Function to fetch search suggestions
+        searchInput.addEventListener('input', async () => {
+            const query = searchInput.value;
+            if (query.length > 0) {
+                try {
+                    const response = await fetch(`/search?query=${query}`); -->
+                    <!-- const data = await response.json();
+
+                    if (data.error) {
+                        resultsContainer.innerHTML = `<div style="color: red;">${data.error}</div>`;
+                    } else {
+                        resultsContainer.innerHTML = '';
+                        for (const quote of data.quotes) {
+                            const symbol = quote.symbol;
+                            const name = quote.shortname || quote.longname;
+                            const resultItem = document.createElement('div');
+                            resultItem.classList.add('result-item');
+                            resultItem.textContent = `${symbol} ->> ${name}`;
+                            resultItem.addEventListener('click', () => {
+                                searchInput.value = symbol;
+                                resultsContainer.innerHTML = '';
+                            });
+                            resultsContainer.appendChild(resultItem);
+                        }
+                    }
+                } catch (error) {
+                    resultsContainer.innerHTML = `<div style="color: red;">Error fetching suggestions</div>`;
+                }
+            } else {
+                resultsContainer.innerHTML = '';
+            }
+        });
+
+        // Form submission for stock analysis
+        document.getElementById('stockForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); -->
+
+            <!-- const stockSymbol = searchInput.value;
+            const loadingDiv = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error-message');
+
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/analyze-stock/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ symbol: stockSymbol })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch stock analysis');
+                }
+
+                const htmlContent = await response.text();
+                resultDiv.innerHTML = htmlContent;
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+                errorDiv.style.display = 'block';
+            } finally { -->
+                <!-- loadingDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> -->
