@@ -33,71 +33,21 @@
             </div>
         </div>
         
-        <h1>Stock Price Chart</h1>
-        <div id="chart"></div>    
-        <script>
-            // Function to update the chart title
-            function updateTitle(symbol) {
-                document.getElementById('symbolTitle').textContent = symbol;
-                document.title = `${symbol} Stock Chart`;
-            }
-
-            // Function to render the chart
-            function renderChart(plotData) {
-                if (plotData && plotData.data) {
-                    Plotly.newPlot('chart', plotData.data, plotData.layout);
-                }
-            }
-
-            // For GET requests - Initial load
-            {% if symbol %}
-                updateTitle("{{ symbol }}");
-            {% endif %}
-
-            // Parse the plot data (for both GET and POST)
-            {% if plot_data %}
-                var plotData = {{ plot_data | safe }};
-                console.log("Plot Data:", plotData);
-                renderChart(plotData);
-            {% endif %}
-
-            // Function to handle POST requests
-            async function updateChartViaPost(symbol) {
-                try {
-                    const response = await fetch('/analyze-stock/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ symbol: symbol })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    updateTitle(symbol);
-                    renderChart(data);
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            }
-        </script>
+        
         <!-- Stock Price Chart Section -->
-        <!-- <section class="mb-8">
+        <section class="mb-8">
             <h2 class="text-xl font-bold text-white mb-4">Stock Price Chart</h2>
-            <div id="chart" style="height: 500px;"></div> 
+            <div id="chart"></div> <!-- Updated chart container div -->
             
             <script>
                 // Parse the plot_data (received from FastAPI)
                 var plotData = {{ plot_data | safe }};
-                // console.log("================", plotData)
+                console.log("================", plotData);
                 // Render the Plotly chart in the 'chart' div with added configuration
                 Plotly.newPlot('chart', plotData.data, plotData.layout);
             </script>
         </section>
-     -->
+    
 
         <!-- Technical Analysis -->
         <section class="mb-8">
@@ -244,8 +194,17 @@
         
             </div>
         </section>
-
+        
 
     </div>
+    <!-- <script>
+        // Parse the plot_data (received from FastAPI)
+        console.log('started ====================')
+        var plotData = {{ plot_data | safe }};
+        console.log("===============",plotData)
+        
+        // Render the Plotly chart in the 'chart' div
+        Plotly.newPlot('chart', plotData.data, plotData.layout);
+    </script> -->
 </body>
 </html>

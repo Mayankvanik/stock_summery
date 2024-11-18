@@ -19,18 +19,43 @@ from pydantic import BaseModel
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 import requests
+import plotly.graph_objects as go
+from plotly.io import to_json
+
 
 class StockAnalyzer:
-    def __init__(self, symbol):
+    def __init__(self, symbol, period=1):
         self.symbol = symbol
         self.stock = yf.Ticker(symbol)
-    
-    # ... [All other StockAnalyzer methods remain the same] ...
+        self.period = period
+        
 
-class StockAnalyzer:
-    def __init__(self, symbol):
-        self.symbol = symbol
-        self.stock = yf.Ticker(symbol)
+    def plot_stock_data(self):
+        """Create and return stock data in JSON format for Plotly"""
+        # Get historical data for the given period
+        hist = self.stock.history(period=f"{self.period}y")
+        
+        fig = go.Figure()
+        
+        # Add candlestick chart
+        fig.add_trace(go.Candlestick(
+            x=hist.index,
+            open=hist['Open'],
+            high=hist['High'],
+            low=hist['Low'],
+            close=hist['Close'],
+            name='OHLC'
+        ))
+        
+        fig.update_layout(
+            title=f'{self.symbol} Stock Price',
+            yaxis_title='Stock Price',
+            xaxis_title='Date',
+            template='plotly_dark'
+        )
+        # Convert plot to JSON
+        return to_json(fig)
+
         
     def fetch_technical_data(self):
         """Fetch technical indicators and market data"""
@@ -123,7 +148,8 @@ class StockAnalyzer:
         fundamental = self.fetch_fundamental_data()
         prediction = self.ml_prediction()
         news, news_links = self.tavily_news()
-        return technical, fundamental, prediction, news, news_links
+        plot = self.plot_stock_data()
+        return technical, fundamental, prediction, news, news_links, plot
 
     def tavily_news(self,k=4):
 
@@ -149,63 +175,6 @@ class StockAnalyzer:
         print(f"{company_name} share {sentiment} news?",'========',all_news)
         return all_news,news_link
 
-    def dummy_llm_analysis(self, openai_key):
-        """Generate LLM analysis using technical and fundamental data"""
-        openai.api_key = openai_key
-        client = OpenAI(api_key = openai_key)
-        
-        # Combine all data
-        technical = self.fetch_technical_data()
-        fundamental = self.fetch_fundamental_data()
-        prediction = self.ml_prediction()
-        news,url = self.tavily_news() #'11111111111' #
-        
-        # Create prompt for LLM
-        prompt = f"""
-        Analyze the following stock data for {self.symbol}:
-
-        Technical Indicators:
-        {technical}
-
-        Fundamental Data:
-        {fundamental}
-
-        ML Prediction:
-        {prediction}
-
-        Latest News:
-        {news}
-
-        Please provide:
-        1. Overall analysis of the stock's current position
-        2. Key strengths and weaknesses
-        3. Potential risks and opportunities
-        4. Investment recommendation (short-term and long-term)
-        5. If Stock is High or low recently and any relation with news than metion sentement of result.
-        """
-        #6. All report give me with dict and value pair
-        # Get LLM analysis
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are a professional stock analyst."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        
-        output = response.choices[0].message.content
-        
-        response02 = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "just make key value pair dict formate from the content with exact key name(strengths, weaknesses ,risk , opportunities, investment_recommendation_long-term, investment_recommendation_short-term, and sentiment) with out losing information of value include all information in value"},
-                {"role": "user", "content": output}
-            ]
-        )
-        output02 = response02.choices[0].message.content
-        print('➡ output02 type:', type(output02))
-        print('ooooooo',output,'pppppppp',output02)
-        return  output02
 
     def llm_analysis(self, technical, fundamental, prediction, news,openai_key):
         """Generate LLM analysis using technical and fundamental data"""
@@ -263,26 +232,6 @@ class StockAnalyzer:
 # Create FastAPI app
 app = FastAPI()
 
-# Enable CORS
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-
-# origins = ["http://localhost:8000"]  # Add your allowed origins here
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["GET", "POST"],
-#     allow_headers=["*"],
-# )
-
-
 # Setup templates
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -300,49 +249,7 @@ def setup_directories():
     
     # Create default template file
     template_path = Path("templates/report_template.html")
-    # if not template_path.exists():
-    #     default_template = """
-    #     <!DOCTYPE html>
-    #     <html>
-    #     <head>
-    #         <title>Stock Analysis Report - {{stock_symbol}}</title>
-    #     </head>
-    #     <body>
-    #         <h1>Stock Analysis Report for {{stock_symbol}}</h1>
-    #         <p>Generated on: {{current_date}}</p>
-            
-    #         <h2>Technical Metrics</h2>
-    #         <ul>
-    #         {% for key, value in metrics.items() %}
-    #             <li>{{key}}: {{value}}</li>
-    #         {% endfor %}
-    #         </ul>
-            
-    #         <h2>Fundamental Data</h2>
-    #         <ul>
-    #         {% for key, value in fundamentals.items() %}
-    #             <li>{{key}}: {{value}}</li>
-    #         {% endfor %}
-    #         </ul>
-            
-    #         <h2>Price Prediction</h2>
-    #         <ul>
-    #         {% for key, value in prediction.items() %}
-    #             <li>{{key}}: {{value}}</li>
-    #         {% endfor %}
-    #         </ul>
-            
-    #         <h2>Analysis and Recommendations</h2>
-    #         <ul>
-    #         {% for key, value in recommendation.items() %}
-    #             <li>{{key}}: {{value}}</li>
-    #         {% endfor %}
-    #         </ul>
-    #     </body>
-    #     </html>
-    #     """
-    #     template_path.write_text(default_template)
-
+   
     # Create index.html
     index_path = Path("templates/index.html")
     if not index_path.exists():
@@ -384,83 +291,64 @@ def analyze_stock(symbol: str, openai_key: str):
     """Run complete stock analysis"""
     analyzer = StockAnalyzer(symbol)
     
-    technical, fundamental, prediction, news, news_links = analyzer.get_all_data()
+    technical, fundamental, prediction, news, news_links, plot = analyzer.get_all_data()
     
     results = {
         'Technical_Data': technical,
         'Fundamental_Data': fundamental,
         'ML_Prediction': prediction,
         'News_link': news_links,
+        'plot': plot,
         'LLM_Analysis': analyzer.llm_analysis(technical, fundamental, prediction, news,openai_key)
     }
     return results
 
-def render_report_html(data , template_path='templates', output_path='stock_report02.html'):
-    """Render HTML report from analysis results"""
-    env = Environment(
-        loader=FileSystemLoader(template_path),
-        autoescape=True
-    )
-    template = env.get_template('report_template.html')
+def save_plot_data_to_txt(data, file_path='plot_data_main.txt'):
+    # Check if data['plot'] is a dictionary or a string
+    if isinstance(data, dict):
+        plot_data_str = json.dumps(data, indent=4)
+    else:
+        plot_data_str = data  # Assume it's already a JSON string if not a dictionary
+    
+    # Write the JSON string to a file
+    with open(file_path, 'w') as file:
+        file.write(plot_data_str)
+    
+    print(f"Plot data saved to {file_path}")
+
+def render_report_html(data, request, template_name="report_template.html"):
+    """Render HTML report from analysis results using TemplateResponse"""
 
     # Parse LLM analysis JSON
     input_str = data['LLM_Analysis']
-    print('fffffffffff',input_str)
     json_match = re.search(r'\{.*\}', input_str, re.DOTALL)
     json_str = json_match.group(0)
     data02 = json.loads(json_str)
 
-    news_links = []
-    for i, url in enumerate(data['News_link'], 1):
-        news_links.append({
-            'index': f'News {i}',
-            'url': url
-        })
-    current_date = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    print('➡ news_links:', news_links)
-    html_content = template.render(
-        stock_symbol=data['Fundamental_Data']['company_name'],#"JPPOWER.NS",
-        current_date=current_date,
-        metrics=data['Technical_Data'],
-        fundamentals=data['Fundamental_Data'],
-        prediction=data['ML_Prediction'],
-        news_links = news_links,
-        recommendation=data02
-    )
-    return html_content
+    # Prepare news links
+    news_links = [{"index": f'News {i+1}', "url": url} for i, url in enumerate(data['News_link'])]
 
-# import httpx
-# @app.get("/api/yahoo-search")
-# async def yahoo_search(query: str):
-#     async with httpx.AsyncClient() as client:
-#         response = await client.get(
-#             f"https://query2.finance.yahoo.com/v1/finance/search", 
-#             params={"q": query},
-#             headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'}
-#         )
+    # Set other context variables
+    current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    #plot_data = json.dumps(data['plot']) if isinstance(data['plot'], dict) else data['plot']
     
-#     if response.status_code == 200:
-#         return response.json()
-#     else:
-#         raise HTTPException(status_code=response.status_code, detail="Error fetching data from Yahoo Finance")
+    save_plot_data_to_txt(data['plot'])
+    print('➡ data type:', type(data['plot']))
 
-# @app.get("/proxy-yahoo-search")
-# async def proxy_yahoo_search(query: str):
-#     url = f"https://query2.finance.yahoo.com/v1/finance/search?q={query}"
-#     async with httpx.AsyncClient() as client:
-#         response = await client.get(url)
-#     return response.json()
+    # Use TemplateResponse for FastAPI
+    return templates.TemplateResponse(template_name, {
+        "request": Request,
+        "stock_symbol": data['Fundamental_Data']['company_name'],
+        "current_date": current_date,
+        "metrics": data['Technical_Data'],
+        "fundamentals": data['Fundamental_Data'],
+        "prediction": data['ML_Prediction'],
+        "plot_data": data['plot'],
+        "news_links": news_links,
+        "request": request,
+        "recommendation": data02
+    })
 
-# async def fetch_suggestions(query: str):
-#     async with httpx.AsyncClient() as client:
-#         response = await client.get(
-#             f"https://query2.finance.yahoo.com/v1/finance/search",
-#             params={"q": query},
-#             headers={
-#                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
-#             }
-#         )
-#         return response.json()
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -492,31 +380,17 @@ def search_stock(query: str):
     except requests.exceptions.RequestException as e:
         print(f"Error occurred: {e}")
         return None
-# @app.get("/", response_class=HTMLResponse)
-# async def read_root(request: Request):
-#     """Serve the main page"""
-#     return templates.TemplateResponse("index.html", {"request": request})
-
-# @app.get("/suggestions", response_class=HTMLResponse)
-# async def get_suggestions(request: Request, query: str):
-#     """Handle stock suggestion requests"""
-#     try:
-#         suggestions = await fetch_suggestions(query)
-#         return HTMLResponse(content=suggestions)
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 
 @app.post("/analyze-stock/", response_class=HTMLResponse)
-async def analyze_stock_endpoint(stock_request: StockRequest):
-    """Handle stock analysis requests"""
+async def analyze_stock_endpoint(stock_request: StockRequest, request: Request):
+    """Handle stock analysis requests and render the report template"""
     try:
         symbol = stock_request.symbol
         API_KEY = 'sk-proj-ac5LJh6fUwThrixXKhZyT3BlbkFJ6MklVui6AG9o95YXCvmB'  # Replace with your actual API key
 
         results = analyze_stock(symbol, API_KEY)
-        html_content = render_report_html(results)
-        return HTMLResponse(content=html_content)
+        return render_report_html(results, request)
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
@@ -530,4 +404,3 @@ if __name__ == "__main__":
 
 
        
-

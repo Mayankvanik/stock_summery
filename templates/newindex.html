@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Chart</title>
+    <!-- Include Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1><span id="symbolTitle"></span> Stock Price</h1>
+    <div id="chart"></div>
+    
+    <script>
+        // Function to update the chart title
+        function updateTitle(symbol) {
+            document.getElementById('symbolTitle').textContent = symbol;
+            document.title = `${symbol} Stock Chart`;
+        }
+
+        // Function to render the chart
+        function renderChart(plotData) {
+            if (plotData && plotData.data) {
+                Plotly.newPlot('chart', plotData.data, plotData.layout);
+            }
+        }
+
+        // For GET requests - Initial load
+        {% if symbol %}
+            updateTitle("{{ symbol }}");
+        {% endif %}
+
+        // Parse the plot data (for both GET and POST)
+        {% if plot_data %}
+            var plotData = {{ plot_data | safe }};
+            console.log("Plot Data:", plotData);
+            renderChart(plotData);
+        {% endif %}
+
+        // Function to handle POST requests
+        // /api/stock
+        async function updateChartViaPost(symbol) {
+            try {
+                const response = await fetch('/analyze-stock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ symbol: symbol })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                updateTitle(symbol);
+                renderChart(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ symbol }} Stock Chart</title> -->
+    <!-- Include Plotly.js -->
+    <!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>{{ symbol }} Stock Price</h1>
+    <div id="chart"></div>
+    
+    <script>
+        // Parse the plot_data (received from FastAPI)
+        var plotData = {{ plot_data | safe }};
+        console.log("================",plotData)
+        // Render the Plotly chart in the 'chart' div
+        Plotly.newPlot('chart', plotData.data, plotData.layout);
+    </script>
+</body>
+</html> -->
